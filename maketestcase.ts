@@ -25,16 +25,21 @@ var pkgdt: pkg[] = [
     {name: "ok-20", test: "13.3.3", min: "13.4.2", max: "13.2.0", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より大,範囲maxとmin逆転"}, // major =, miner v, patch ^ (2)
     {name: "ok-21", test: "3.3.3.3", min: "2.3.0", max: "2.3.4", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内<br>その他バージョン付加"}, // longer version 
     {name: "ok-22", test: "3.3.3.3", min: "3.3.0", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ<br>その他バージョン付加"}, // longer version (2)
-    {name: "ok-23", test: "3.3.3-test", min: "2.3.0", max: "2.3.3", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ+文字列付加"}, // include string
-    {name: "ok-24", test: "3.3.3-test", min: "3.3.0", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲より大+文字列付加"}, // include string (2)
+    {name: "ok-23", test: "3.3.3-test", min: "2.3.0", max: "2.3.3", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ<br>プレリリースバージョン付加"}, // include prerelease version
+    {name: "ok-24", test: "3.3.3-test-2", min: "3.3.0", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲より大<br>プレリリースバージョン付加"}, // include prerelease version (2)
+    {name: "ok-25", test: "3.3.0+2", min: "3.3.1", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲より小<br>ビルドメタデータ付加"}, // include build meta data
+    {name: "ok-26", test: "3.3.0-alpha.2", min: "3.3.0-alpha.3", max: "3.3.0-alpha.3", info: "完全一致比較：一致せず"}, // NOT match of all
     // the case of 'NG'
     {name: "ng-01", test: "3.3.3", min: "2.2.2", max: "4.4.4", info: "メジャーバージョン：範囲内<br>マイナーバージョン：範囲内<br>パッチバージョン：範囲内"}, // major in, miner in, patch in
     {name: "ng-02", test: "3.3.3", min: "3.2.2", max: "3.4.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲内<br>パッチバージョン：範囲内"}, // major =, miner in, patch in
     {name: "ng-03", test: "3.3.3", min: "3.3.2", max: "3.3.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内"}, // major =, miner =, patch in
     {name: "ng-04", test: "3.3.3", min: "3.3.3", max: "3.3.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲minと同じ"}, // major =, miner =, patch=min
     {name: "ng-05", test: "3.3.3", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ"}, // major =, miner =, patch=max
-    {name: "ng-06", test: "3.3.3-test", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ+文字列付加"} // major =, miner =, patch=max include string
-]
+    {name: "ng-06", test: "3.3.3-test", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ+<br>プレリリースバージョン付加"}, // major =, miner =, patch=max include prerelease version
+    {name: "ng-07", test: "3.3.3-test-2", min: "3.3.3", max: "3.3.5", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲minと同じ<br>プレリリースバージョン付加"}, // include prerelease version (2)
+    {name: "ng-08", test: "3.3.1+20220511", min: "3.3.0", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内<br>ビルドメタデータ付加"}, // include build meta data
+    {name: "ng-09", test: "3.3.0-alpha.3", min: "3.3.0-alpha.3", max: "3.3.0-alpha.3", info: "完全一致比較：一致"}, // match of all
+ ]
 
 // create test of vulnerabilityPackage.json
 var data:string = "[\n"
@@ -109,7 +114,7 @@ for(var i = 0; i < pkgdt.length; i++) {
         td = td + " | チェックがOKになること。 | |\n";
     }
     else if(pkgdt[i].name.indexOf('ng') === 0) {
-        td = td + " | チェックがNGになること。 | |\n";
+        td = td + " | チェックがNGになること。<br>pull requestのコメントに<br>NGのパッケージ名とバージョンが<br>通知されること | |\n";
     }
     else {
         td = td + " | | |\n";
