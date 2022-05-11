@@ -5,24 +5,24 @@ var pkgdt: pkg[] = [
     // the case of 'OK'
     {name: "ok-01", test: "3.3.3", min: "1.2.0", max: "2.4.5", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲内<br>パッチバージョン：範囲内"}, // major ^, miner in, patch in 
     {name: "ok-02", test: "3.3.3", min: "1.0.0", max: "2.2.2", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大"}, // major ^, miner ^, patch ^
-    {name: "ok-03", test: "3.3.3", min: "1.0.2", max: "2.2.1", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,範囲maxとmin逆転"}, // major ^, miner ^, patch ^ (2)
+    {name: "ok-03", test: "3.3.3", min: "1.0.2", max: "2.2.1", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,max値 < min値"}, // major ^, miner ^, patch ^ (2)
     {name: "ok-04", test: "3.3.3", min: "1.4.4", max: "2.5.5", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小"}, // major ^, miner v, patch v 
-    {name: "ok-05", test: "3.3.3", min: "1.4.5", max: "2.5.4", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,範囲maxとmin逆転"}, // major ^, miner v, patch v (2)
+    {name: "ok-05", test: "3.3.3", min: "1.4.5", max: "2.5.4", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,max値 < min値"}, // major ^, miner v, patch v (2)
     {name: "ok-06", test: "3.3.3", min: "3.0.0", max: "3.2.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大"}, // major =, miner ^, patch ^
-    {name: "ok-07", test: "3.3.3", min: "3.0.2", max: "3.2.1", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,範囲maxとmin逆転"}, // major =, miner ^, patch ^ (2)
+    {name: "ok-07", test: "3.3.3", min: "3.0.2", max: "3.2.1", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,max値 < min値"}, // major =, miner ^, patch ^ (2)
     {name: "ok-08", test: "3.3.3", min: "3.0.4", max: "3.2.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より小"}, // major =, miner ^, patch v
-    {name: "ok-09", test: "3.3.3", min: "3.1.5", max: "3.2.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より小,範囲maxとmin逆転"}, // major =, miner ^, patch v (2)
+    {name: "ok-09", test: "3.3.3", min: "3.1.5", max: "3.2.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より小,max値 < min値"}, // major =, miner ^, patch v (2)
     {name: "ok-10", test: "3.3.3", min: "3.3.1", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲より大"}, // major =, miner =, patch ^
     {name: "ok-11", test: "3.3.3", min: "3.3.4", max: "3.3.5", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲より小"}, // major =, miner =, patch v 
     {name: "ok-12", test: "3.3.3", min: "4.2.1", max: "5.4.5", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲内<br>パッチバージョン：範囲内"}, // major v, miner in, patch in
     {name: "ok-13", test: "3.3.3", min: "4.4.4", max: "5.5.5", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小"}, // major v, miner v, patch v
-    {name: "ok-14", test: "3.3.3", min: "4.4.6", max: "5.5.4", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,範囲maxとmin逆転"}, // major v, miner v, patch v (2)
+    {name: "ok-14", test: "3.3.3", min: "4.4.6", max: "5.5.4", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,max値 < min値"}, // major v, miner v, patch v (2)
     {name: "ok-15", test: "3.3.3", min: "4.0.1", max: "4.1.2", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大"}, // major v, miner ^, patch ^ 
-    {name: "ok-16", test: "3.3.3", min: "5.1.2", max: "6.2.0", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,範囲maxとmin逆転"}, // major v, miner ^, patch ^ (2)
+    {name: "ok-16", test: "3.3.3", min: "5.1.2", max: "6.2.0", info: "メジャーバージョン：範囲より小<br>マイナーバージョン：範囲より大<br>パッチバージョン：範囲より大,max値 < min値"}, // major v, miner ^, patch ^ (2)
     {name: "ok-17", test: "13.3.3", min: "13.4.4", max: "13.5.5", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小"}, // major =, miner v, patch v
-    {name: "ok-18", test: "13.3.3", min: "13.4.5", max: "13.5.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,範囲maxとmin逆転"}, // major =, miner v, patch v (2)
+    {name: "ok-18", test: "13.3.3", min: "13.4.5", max: "13.5.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より小,max値 < min値"}, // major =, miner v, patch v (2)
     {name: "ok-19", test: "13.3.3", min: "13.4.2", max: "13.5.1", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より大"}, // major =, miner v, patch ^
-    {name: "ok-20", test: "13.3.3", min: "13.4.2", max: "13.2.0", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より大,範囲maxとmin逆転"}, // major =, miner v, patch ^ (2)
+    {name: "ok-20", test: "13.3.3", min: "13.4.2", max: "13.2.0", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲より小<br>パッチバージョン：範囲より大,max値 < min値"}, // major =, miner v, patch ^ (2)
     {name: "ok-21", test: "3.3.3.3", min: "2.3.0", max: "2.3.4", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内<br>その他バージョン付加"}, // longer version 
     {name: "ok-22", test: "3.3.3.3", min: "3.3.0", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ<br>その他バージョン付加"}, // longer version (2)
     {name: "ok-23", test: "3.3.3-test", min: "2.3.0", max: "2.3.3", info: "メジャーバージョン：範囲より大<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ<br>プレリリースバージョン付加"}, // include prerelease version
@@ -35,7 +35,7 @@ var pkgdt: pkg[] = [
     {name: "ng-03", test: "3.3.3", min: "3.3.2", max: "3.3.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内"}, // major =, miner =, patch in
     {name: "ng-04", test: "3.3.3", min: "3.3.3", max: "3.3.4", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲minと同じ"}, // major =, miner =, patch=min
     {name: "ng-05", test: "3.3.3", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ"}, // major =, miner =, patch=max
-    {name: "ng-06", test: "3.3.3-test", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ+<br>プレリリースバージョン付加"}, // major =, miner =, patch=max include prerelease version
+    {name: "ng-06", test: "3.3.3-test", min: "3.3.2", max: "3.3.3", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲maxと同じ<br>プレリリースバージョン付加"}, // major =, miner =, patch=max include prerelease version
     {name: "ng-07", test: "3.3.3-test-2", min: "3.3.3", max: "3.3.5", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲minと同じ<br>プレリリースバージョン付加"}, // include prerelease version (2)
     {name: "ng-08", test: "3.3.1+20220511", min: "3.3.0", max: "3.3.2", info: "メジャーバージョン：範囲と同じ<br>マイナーバージョン：範囲と同じ<br>パッチバージョン：範囲内<br>ビルドメタデータ付加"}, // include build meta data
     {name: "ng-09", test: "3.3.0-alpha.3", min: "3.3.0-alpha.3", max: "3.3.0-alpha.3", info: "完全一致比較：一致"}, // match of all
@@ -97,7 +97,7 @@ fs.writeFile("testpackage-lock.json", txt, function(err){
 })
 
 // create test case document
-var td:string = "## バージョン範囲を組み合わせテスト\n\n";
+var td:string = "## バージョン範囲組み合わせテスト\n\n";
 td = td + "下記表の\'手順\'記載の `package name` と `test version` を package-lock.json に記載し、<br>";
 td = td + " `min of range` と `max of range` のバージョン範囲を本github action の設定用jsonに記載し、<br>";
 td = td + "pull request を行い、本github action を動作させる。\n";
