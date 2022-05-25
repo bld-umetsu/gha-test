@@ -1,9 +1,9 @@
-name: checkVulnerablePackage
+name: checkVulnerablePackages
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths: ['**/package-lock.json', '.github/workflows/vulnerablePackage.json']
+    paths: ['**/package-lock.json', '.github/workflows/vulnerablePackages.json']
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
         id: read-json
         # read Json as package checking list which includes package name and version.
         run:  |
-          package_list=$(cat "./.github/workflows/vulnerablePackage.json" | jq -c)
+          package_list=$(cat "./.github/workflows/vulnerablePackages.json" | jq -c)
           echo $package_list
           echo "::set-output name=value::$( echo $package_list )"
 
