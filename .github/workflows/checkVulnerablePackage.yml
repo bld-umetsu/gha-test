@@ -1,9 +1,9 @@
-name: checkVulnerabilityPackage
+name: checkVulnerablePackage
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths: ['**/package-lock.json', '.github/workflows/vulnerabilityPackage.json']
+    paths: ['**/package-lock.json', '.github/workflows/vulnerablePackage.json']
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
         id: read-json
         # read Json as package checking list which includes package name and version.
         run:  |
-          package_list=$(cat "./.github/workflows/vulnerabilityPackage.json" | jq -c)
+          package_list=$(cat "./.github/workflows/vulnerablePackage.json" | jq -c)
           echo $package_list
           echo "::set-output name=value::$( echo $package_list )"
 
@@ -42,7 +42,7 @@ jobs:
 
       - name: Search and judge version of the package
         id: search-judge
-        # search 'packages' and `dependencies` section for a version of vulnerability package.
+        # search 'packages' and `dependencies` section for a version of vulnerable package.
         run:  |
           source ./.github/workflows/scripts/compareVersion.sh
           filelist=$(find ./ -mindepth 1 -name "package-lock.json" | jq -R -s -c 'split("\n")[:-1]')
@@ -61,7 +61,7 @@ jobs:
             fi
           done
           if [ "$error_message" ]; then # string comparison via "".
-            error_message="Vulnerability package has included in your repository.%0A"$error_message
+            error_message="vulnerable package has included in your repository.%0A"$error_message
             echo $error_message
             echo "::set-output name=judge_message::$( echo $error_message )"
             exit 1

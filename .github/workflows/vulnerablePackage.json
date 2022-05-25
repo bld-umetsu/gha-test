@@ -1,0 +1,11 @@
+[
+  { "pkgnm": "colors", "pkgvermin": "1.4.1", "pkgvermax": "1.4.2" },
+  {
+    "pkgnm": "colors",
+    "pkgvermin": "1.4.44-liberty-2",
+    "pkgvermax": "1.4.44-liberty-2"
+  },
+  { "pkgnm": "node-ipc", "pkgvermin": "9.2.2", "pkgvermax": "9.2.2" },
+  { "pkgnm": "node-ipc", "pkgvermin": "10.1.1", "pkgvermax": "10.1.3" },
+  { "pkgnm": "node-ipc", "pkgvermin": "11.0.0+", "pkgvermax": "11.0.0+" }
+]
