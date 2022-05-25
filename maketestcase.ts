@@ -41,7 +41,7 @@ var pkgdt: pkg[] = [
     {name: "ng-09", test: "3.3.0-alpha.3", min: "3.3.0-alpha.3", max: "3.3.0-alpha.3", info: "完全一致比較：一致"}, // match of all
  ]
 
-// create test of vulnerabilityPackage.json
+// create test of vulnerablePackage.json
 var data:string = "[\n"
 for(var i = 0; i < pkgdt.length; i++) {
     data = data + "\t{ \"pkgnm\": \"" + pkgdt[i].name + "\", ";
@@ -53,7 +53,7 @@ for(var i = 0; i < pkgdt.length; i++) {
     data = data + "\n";
 }  
 data = data + "]"
-fs.writeFile("vulnerabilityPackage.json", data, function(err){
+fs.writeFile("vulnerablePackage.json", data, function(err){
     if(err){
         return console.log("error");
     }
