@@ -1,0 +1,21 @@
+name: 'check-vulnerable-packages'
+description: 'Check vulnerable packages from package-lock.json'
+inputs:
+  package-name:
+    description: 'Name of the vulnerable package'
+    required: true
+    default: ''
+  package-version-min:
+    description: 'Minimum version of the vulnerable package'
+    required: true
+    default: '1.0.0'
+  package-version-max:
+    description: 'Maximum version of the vulnerable package'
+    required: true
+    default: '1.0.0'
+outputs:
+  check-result:
+    description: 'Check result'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
