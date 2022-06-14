@@ -45,9 +45,9 @@ jobs:
         # search 'packages' and `dependencies` section for a version of vulnerable package.
         uses: ./.github/actions/check-vulnerable-packages
         with:
-          package-name: matrix.entries.pkgnm
-          package-version-min: matrix.entries.pkgvermin
-          package-version-max: matrix.entries.pkgvermax
+          package-name: ${{ matrix.entries.pkgnm }}
+          package-version-min: ${{ matrix.entries.pkgvermin }}
+          package-version-max: ${{ matrix.entries.pkgvermax }}
 
       - name: Write fail comment to pull request
         id: write-fail-comment
