@@ -10,13 +10,18 @@ const main = async () => {
     const packageVersionMax = core.getInput('package-version-max');
 
     const listFoundPackageLockJson = await executeCommand(
-      `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json" | jq -R -s -c 'split("\n")[:-1]'"`,
+      `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`,
     );
-    const arrayPackageLockJson = listFoundPackageLockJson.split(',');
+    const arrayPackageLockJson = listFoundPackageLockJson.split('\n');
+    // const listFoundPackageLockJson = await executeCommand(
+    //   `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json" | jq -R -s -c 'split("\n")[:-1]'"`,
+    // );
+    // const arrayPackageLockJson = listFoundPackageLockJson.split(',');
     let vulnerableMessage = '';
     arrayPackageLockJson.forEach(async (filePath, index) => {
+      if (filePath == "") return
       const fitVersionFromPackagesSection = await executeCommand(
-        `/bin/bash -c "cat ${filePath} | jq -r '.packages."node_modules/${packageName}".version'"`,
+        `/bin/bash -c "cat ${filePath} | jq -r '.packages.node_modules/${packageName}.version'"`,
       );
       const isVulnerableVersion = checkVulnerableVersion(
         fitVersionFromPackagesSection,
@@ -32,7 +37,7 @@ const main = async () => {
         );
       } else {
         const fitVersionFromDependenciesSection = await executeCommand(
-          `/bin/bash -c "cat ${filePath} | jq -r '.dependencies."${packageName}".version'"`,
+          `/bin/bash -c "cat ${filePath} | jq -r '.dependencies.${packageName}.version'"`,
         );
         const isVulnerableVersion = checkVulnerableVersion(
           fitVersionFromDependenciesSection,
