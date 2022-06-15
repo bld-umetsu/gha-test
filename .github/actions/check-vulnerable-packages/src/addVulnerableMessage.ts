@@ -8,9 +8,9 @@ export const addVulnerableMessage = (
     '[' +
     packageName +
     ' ' +
-    packageVersion +
+    packageVersion.replace("\n", "") +
     "] was found in '" +
     packageLockJsonfilePath +
-    "'.%0A";
+    "'\n";
   return messageBuffer;
 };
