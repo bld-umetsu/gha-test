@@ -3246,6 +3246,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.checkVulnerableVersion = void 0;
 // cf.: https://semver.org/lang/ja/#spec-item-11
 const checkVulnerableVersion = (targetVersion, minVersion, maxVersion) => {
+    targetVersion = targetVersion.replace("\n", "");
     if (minVersion === maxVersion) {
         if (targetVersion === minVersion) {
             return true;
@@ -3410,9 +3411,9 @@ const main = async () => {
         const packageName = core.getInput('package-name');
         const packageVersionMin = core.getInput('package-version-min');
         const packageVersionMax = core.getInput('package-version-max');
-        // const packageName = "ng-01";
-        // const packageVersionMin = "2.2.2";
-        // const packageVersionMax = "4.4.4";
+        // const packageName = "ng-09";
+        // const packageVersionMin = "3.3.0-alpha.3";
+        // const packageVersionMax = "3.3.0-alpha.3";
         const listFoundPackageLockJson = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`);
         const arrayPackageLockJson = listFoundPackageLockJson.split('\n');
         // const listFoundPackageLockJson = await executeCommand(

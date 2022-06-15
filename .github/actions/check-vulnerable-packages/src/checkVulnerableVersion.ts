@@ -4,6 +4,7 @@ export const checkVulnerableVersion = (
   minVersion: string,
   maxVersion: string,
 ): boolean => {
+  targetVersion = targetVersion.replace("\n", "");
   if (minVersion === maxVersion) {
     if (targetVersion === minVersion) {
       return true;
@@ -31,7 +32,6 @@ export const checkVulnerableVersion = (
   else if (compareMinimumVersion == VERSION_SAME) {
     return true;
   }
-
 
   // compare with maximum version
   const compareMaximumVersion = numericTargetVersion[0].localeCompare(maxVersion);

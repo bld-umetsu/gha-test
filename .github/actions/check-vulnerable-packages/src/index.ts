@@ -10,9 +10,9 @@ const main = async () => {
     const packageVersionMin = core.getInput('package-version-min');
     const packageVersionMax = core.getInput('package-version-max');
 
-    // const packageName = "ng-01";
-    // const packageVersionMin = "2.2.2";
-    // const packageVersionMax = "4.4.4";
+    // const packageName = "ng-09";
+    // const packageVersionMin = "3.3.0-alpha.3";
+    // const packageVersionMax = "3.3.0-alpha.3";
 
     const listFoundPackageLockJson = await executeCommand(
       `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`,
