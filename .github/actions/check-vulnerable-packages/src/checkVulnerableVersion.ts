@@ -14,9 +14,11 @@ export const checkVulnerableVersion = (
   }
 
   // separate each version string to Major, Miner and Patch.
+  
   const tempRemoveBuildMetaData = targetVersion.split('+');
-  // const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
-  const numericTargetVersion = tempRemoveBuildMetaData[0].split('-');
+  const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
+  // const numericTargetVersion = tempRemoveBuildMetaData[0].split('-');
+  const numericTargetVersion = tempRemovePrereleaseVersion[0];
   // const arrayTargetVersion = tempRemovePrereleaseVersion[0].split('.');
   // const arrayMinVersion = minVersion.split('.');
   // const arrayMaxVersion = maxVersion.split('.');
@@ -24,8 +26,9 @@ export const checkVulnerableVersion = (
   const VERSION_LARGE = 1;
   const VERSION_SAME = 0;
   const VERSION_SMALL = -1;
+
   // compare with minimum version
-  const compareMinimumVersion = numericTargetVersion[0].localeCompare(minVersion);
+  const compareMinimumVersion = numericTargetVersion.localeCompare(minVersion);
   if (compareMinimumVersion == VERSION_SMALL) {
     return false;
   }
@@ -34,7 +37,7 @@ export const checkVulnerableVersion = (
   }
 
   // compare with maximum version
-  const compareMaximumVersion = numericTargetVersion[0].localeCompare(maxVersion);
+  const compareMaximumVersion = numericTargetVersion.localeCompare(maxVersion);
   if (compareMaximumVersion == VERSION_LARGE) {
     return false;
   }
