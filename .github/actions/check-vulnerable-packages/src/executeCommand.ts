@@ -1,5 +1,6 @@
 import * as exec from '@actions/exec';
 import { ExecOptions } from '@actions/exec';
+import { resolve } from 'path';
 
 export const executeCommand = async (command: string): Promise<string> => {
   let output = '';
@@ -13,5 +14,6 @@ export const executeCommand = async (command: string): Promise<string> => {
     },
   };
   await exec.exec(command, [''], options);
+  // resolve(output);
   return output;
 };

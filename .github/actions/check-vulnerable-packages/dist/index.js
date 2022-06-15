@@ -3256,47 +3256,65 @@ const checkVulnerableVersion = (targetVersion, minVersion, maxVersion) => {
     }
     // separate each version string to Major, Miner and Patch.
     const tempRemoveBuildMetaData = targetVersion.split('+');
-    const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
-    const arrayTargetVersion = tempRemovePrereleaseVersion[0].split('.');
-    const arrayMinVersion = minVersion.split('.');
-    const arrayMaxVersion = maxVersion.split('.');
+    // const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
+    const numericTargetVersion = tempRemoveBuildMetaData[0].split('-');
+    // const arrayTargetVersion = tempRemovePrereleaseVersion[0].split('.');
+    // const arrayMinVersion = minVersion.split('.');
+    // const arrayMaxVersion = maxVersion.split('.');
+    const VERSION_LARGE = 1;
+    const VERSION_SAME = 0;
+    const VERSION_SMALL = -1;
     // compare with minimum version
-    let largerCount = 0;
-    arrayTargetVersion.forEach((eachVersion, index) => {
-        if (index < arrayMinVersion.length) {
-            if (eachVersion > arrayMinVersion[index]) {
-                largerCount += 1;
-            }
-            if (eachVersion < arrayMinVersion[index]) {
-                return false;
-            }
-        }
-    });
-    if (largerCount == 0) {
-        if (arrayTargetVersion.length == arrayMinVersion.length) {
-            return true;
-        }
-        else if (arrayTargetVersion.length < arrayMinVersion.length) {
-            return false;
-        }
-    }
-    // compare with maximum version
-    arrayTargetVersion.forEach((eachVersion, index) => {
-        if (index < arrayMaxVersion.length) {
-            if (eachVersion < arrayMaxVersion[index]) {
-                return true;
-            }
-            if (eachVersion > arrayMaxVersion[index]) {
-                return false;
-            }
-        }
-    });
-    if (arrayTargetVersion.length <= arrayMaxVersion.length) {
-        return true;
-    }
-    else {
+    const compareMinimumVersion = numericTargetVersion[0].localeCompare(minVersion);
+    if (compareMinimumVersion == VERSION_SMALL) {
         return false;
     }
+    else if (compareMinimumVersion == VERSION_SAME) {
+        return true;
+    }
+    // compare with maximum version
+    const compareMaximumVersion = numericTargetVersion[0].localeCompare(maxVersion);
+    if (compareMaximumVersion == VERSION_LARGE) {
+        return false;
+    }
+    else {
+        return true;
+    }
+    // // compare with minimum version
+    // let largerCount = 0;
+    // arrayTargetVersion.forEach((eachVersion, index) => {
+    //   if (index < arrayMinVersion.length) {
+    //     if (eachVersion > arrayMinVersion[index]) {
+    //       largerCount += 1;
+    //     }
+    //     if (eachVersion < arrayMinVersion[index]) {
+    //       return false;
+    //     }
+    //   }
+    // });
+    // if (largerCount == 0) {
+    //   if (arrayTargetVersion.length == arrayMinVersion.length) {
+    //     return true;
+    //   } else if (arrayTargetVersion.length < arrayMinVersion.length) {
+    //     return false;
+    //   }
+    // }
+    // // compare with maximum version
+    // arrayTargetVersion.forEach((eachVersion, index) => {
+    //   if (index < arrayMaxVersion.length) {
+    //     if (eachVersion < arrayMaxVersion[index]) {
+    //       return true;
+    //     }
+    //     if (eachVersion > arrayMaxVersion[index]) {
+    //       return false;
+    //     }
+    //   }
+    // });
+    // if (arrayTargetVersion.length <= arrayMaxVersion.length) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
 };
 exports.checkVulnerableVersion = checkVulnerableVersion;
 
@@ -3346,6 +3364,7 @@ const executeCommand = async (command) => {
         },
     };
     await exec.exec(command, [''], options);
+    // resolve(output);
     return output;
 };
 exports.executeCommand = executeCommand;
@@ -3391,6 +3410,9 @@ const main = async () => {
         const packageName = core.getInput('package-name');
         const packageVersionMin = core.getInput('package-version-min');
         const packageVersionMax = core.getInput('package-version-max');
+        // const packageName = "ng-01";
+        // const packageVersionMin = "2.2.2";
+        // const packageVersionMax = "4.4.4";
         const listFoundPackageLockJson = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`);
         const arrayPackageLockJson = listFoundPackageLockJson.split('\n');
         // const listFoundPackageLockJson = await executeCommand(
@@ -3398,9 +3420,9 @@ const main = async () => {
         // );
         // const arrayPackageLockJson = listFoundPackageLockJson.split(',');
         let vulnerableMessage = '';
-        arrayPackageLockJson.forEach(async (filePath, index) => {
+        for (let filePath of arrayPackageLockJson) {
             if (filePath == "")
-                return;
+                continue;
             const fitVersionFromPackagesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${filePath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`);
             const isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromPackagesSection, packageVersionMin, packageVersionMax);
             if (isVulnerableVersion) {
@@ -3413,7 +3435,8 @@ const main = async () => {
                     vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersionFromDependenciesSection, filePath);
                 }
             }
-        });
+        }
+        ;
         if (vulnerableMessage != '') {
             vulnerableMessage =
                 'vulnerable package has included in your repository.%0A' +
