@@ -3440,7 +3440,7 @@ const main = async () => {
         ;
         if (vulnerableMessage != '') {
             vulnerableMessage =
-                'vulnerable package has included in your repository.%0A' +
+                'vulnerable package has included in your repository.\n' +
                     vulnerableMessage;
             process.exitCode = 1;
         }
