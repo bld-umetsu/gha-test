@@ -3226,10 +3226,10 @@ const addVulnerableMessage = (messageBuffer, packageName, packageVersion, packag
         '[' +
             packageName +
             ' ' +
-            packageVersion +
+            packageVersion.replace("\n", "") +
             "] was found in '" +
             packageLockJsonfilePath +
-            "'.%0A";
+            "'\n";
     return messageBuffer;
 };
 exports.addVulnerableMessage = addVulnerableMessage;
