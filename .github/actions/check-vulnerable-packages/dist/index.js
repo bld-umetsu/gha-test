@@ -3221,9 +3221,9 @@ exports.debug = debug; // for test
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addVulnerableMessage = void 0;
-const addVulnerableMessage = (messageBuffer, packageName, packageVersion, packageLockJsonfilePath) => {
-    const removedReturnCodeFromVersion = packageVersion.replace('\n', '');
-    return `${messageBuffer}[${packageName} ${removedReturnCodeFromVersion}] was found in '${packageLockJsonfilePath}'\n`;
+const addVulnerableMessage = (messageBuffer, packageName, packageVersionWithNewline, packageLockJsonfilePath) => {
+    const packageVersion = packageVersionWithNewline.replace('\n', '');
+    return `${messageBuffer}[${packageName} ${packageVersion}] was found in '${packageLockJsonfilePath}'\n`;
 };
 exports.addVulnerableMessage = addVulnerableMessage;
 
@@ -3237,22 +3237,21 @@ exports.addVulnerableMessage = addVulnerableMessage;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.checkVulnerableVersion = void 0;
-const trimLineFeedCodeFromVersion = (versionString) => versionString.replace('\n', '');
 const trimMetaDataFromVersion = (versionString) => {
     const tempRemoveBuildMetaData = versionString.split('+');
     const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
     return tempRemovePrereleaseVersion[0];
 };
 // cf.: https://semver.org/lang/ja/#spec-item-11
-const checkVulnerableVersion = (targetVersion, minVersion, maxVersion) => {
-    const pureVersion = trimLineFeedCodeFromVersion(targetVersion);
+const checkVulnerableVersion = (targetVersionWithNewline, minVersion, maxVersion) => {
+    const targetVersion = targetVersionWithNewline.replace('\n', '');
     if (minVersion === maxVersion) {
-        if (pureVersion === minVersion) {
+        if (targetVersion === minVersion) {
             return true;
         }
         return false;
     }
-    const numericTargetVersion = trimMetaDataFromVersion(pureVersion);
+    const numericTargetVersion = trimMetaDataFromVersion(targetVersion);
     const compareResult = {
         VERSION_LARGE: 1,
         VERSION_SAME: 0,
@@ -3274,6 +3273,64 @@ const checkVulnerableVersion = (targetVersion, minVersion, maxVersion) => {
     return true;
 };
 exports.checkVulnerableVersion = checkVulnerableVersion;
+
+
+/***/ }),
+
+/***/ 68:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.makeMessageOfDetectedVulnerablePackages = void 0;
+const checkVulnerableVersion_1 = __nccwpck_require__(456);
+const executeCommand_1 = __nccwpck_require__(659);
+const addVulnerableMessage_1 = __nccwpck_require__(309);
+const checkVersionFromPackagesSection = async (packageLockJsonPath, packageName, packageVersionMin, packageVersionMax) => {
+    const fitVersionFromPackagesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${packageLockJsonPath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`);
+    const isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromPackagesSection, packageVersionMin, packageVersionMax);
+    return [isVulnerableVersion, fitVersionFromPackagesSection];
+};
+const checkVersionFromDependenciesSection = async (packageLockJsonPath, packageName, packageVersionMin, packageVersionMax) => {
+    const fitVersionFromDependenciesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${packageLockJsonPath} | jq -r '.dependencies.\\"${packageName}\\".version'"`);
+    const isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromDependenciesSection, packageVersionMin, packageVersionMax);
+    return [isVulnerableVersion, fitVersionFromDependenciesSection];
+};
+const makeMessageOfDetectedVulnerablePackages = async (arrayPackageLockJson, packageName, packageVersionMin, packageVersionMax) => {
+    let vulnerableMessage = '';
+    await Promise.all(arrayPackageLockJson.map(async (filePath) => {
+        // const fitVersionFromPackagesSection = await executeCommand(
+        //   `/bin/bash -c "cat ${filePath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`,
+        // );
+        // let isVulnerableVersion = checkVulnerableVersion(
+        //   fitVersionFromPackagesSection,
+        //   packageVersionMin,
+        //   packageVersionMax,
+        // );
+        let [isVulnerableVersion, fitVersion] = await checkVersionFromPackagesSection(filePath, packageName, packageVersionMin, packageVersionMax);
+        if (isVulnerableVersion) {
+            vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersion, filePath);
+        }
+        else {
+            // const fitVersionFromDependenciesSection = await executeCommand(
+            //   `/bin/bash -c "cat ${filePath} | jq -r '.dependencies.\\"${packageName}\\".version'"`,
+            // );
+            // isVulnerableVersion = checkVulnerableVersion(
+            //   fitVersionFromDependenciesSection,
+            //   packageVersionMin,
+            //   packageVersionMax,
+            // );
+            [isVulnerableVersion, fitVersion] =
+                await checkVersionFromDependenciesSection(filePath, packageName, packageVersionMin, packageVersionMax);
+            if (isVulnerableVersion) {
+                vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersion, filePath);
+            }
+        }
+    }));
+    return vulnerableMessage;
+};
+exports.makeMessageOfDetectedVulnerablePackages = makeMessageOfDetectedVulnerablePackages;
 
 
 /***/ }),
@@ -3358,35 +3415,68 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const checkVulnerableVersion_1 = __nccwpck_require__(456);
 const executeCommand_1 = __nccwpck_require__(659);
-const addVulnerableMessage_1 = __nccwpck_require__(309);
+const detectVulnerablePackages_1 = __nccwpck_require__(68);
+const getArrayFoundPackageLockJson = async () => {
+    const listFoundPackageLockJson = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`);
+    const arrayPackageLockJson = listFoundPackageLockJson
+        .split('\n')
+        .filter(Boolean);
+    return arrayPackageLockJson;
+};
 const main = async () => {
     try {
         const packageName = core.getInput('package-name');
         const packageVersionMin = core.getInput('package-version-min');
         const packageVersionMax = core.getInput('package-version-max');
-        const listFoundPackageLockJson = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`);
-        const arrayPackageLockJson = listFoundPackageLockJson
-            .split('\n')
-            .filter(Boolean);
-        let vulnerableMessage = '';
-        await Promise.all(arrayPackageLockJson.map(async (filePath) => {
-            const fitVersionFromPackagesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${filePath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`);
-            let isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromPackagesSection, packageVersionMin, packageVersionMax);
-            if (isVulnerableVersion) {
-                vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersionFromPackagesSection, filePath);
-            }
-            else {
-                const fitVersionFromDependenciesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${filePath} | jq -r '.dependencies.\\"${packageName}\\".version'"`);
-                isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromDependenciesSection, packageVersionMin, packageVersionMax);
-                if (isVulnerableVersion) {
-                    vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersionFromDependenciesSection, filePath);
-                }
-            }
-        }));
+        // const listFoundPackageLockJson = await executeCommand(
+        //   `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`,
+        // );
+        // const arrayPackageLockJson = listFoundPackageLockJson
+        //   .split('\n')
+        //   .filter(Boolean);
+        const arrayPackageLockJson = await getArrayFoundPackageLockJson();
+        let vulnerableMessage = await (0, detectVulnerablePackages_1.makeMessageOfDetectedVulnerablePackages)(arrayPackageLockJson, packageName, packageVersionMin, packageVersionMax);
+        // let vulnerableMessage = '';
+        // await Promise.all(
+        //   arrayPackageLockJson.map(async (filePath) => {
+        //     const fitVersionFromPackagesSection = await executeCommand(
+        //       `/bin/bash -c "cat ${filePath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`,
+        //     );
+        //     let isVulnerableVersion = checkVulnerableVersion(
+        //       fitVersionFromPackagesSection,
+        //       packageVersionMin,
+        //       packageVersionMax,
+        //     );
+        //     if (isVulnerableVersion) {
+        //       vulnerableMessage = addVulnerableMessage(
+        //         vulnerableMessage,
+        //         packageName,
+        //         fitVersionFromPackagesSection,
+        //         filePath,
+        //       );
+        //     } else {
+        //       const fitVersionFromDependenciesSection = await executeCommand(
+        //         `/bin/bash -c "cat ${filePath} | jq -r '.dependencies.\\"${packageName}\\".version'"`,
+        //       );
+        //       isVulnerableVersion = checkVulnerableVersion(
+        //         fitVersionFromDependenciesSection,
+        //         packageVersionMin,
+        //         packageVersionMax,
+        //       );
+        //       if (isVulnerableVersion) {
+        //         vulnerableMessage = addVulnerableMessage(
+        //           vulnerableMessage,
+        //           packageName,
+        //           fitVersionFromDependenciesSection,
+        //           filePath,
+        //         );
+        //       }
+        //     }
+        //   }),
+        // );
         if (vulnerableMessage !== '') {
-            vulnerableMessage = `vulnerable package has included in your repository.\n${vulnerableMessage}`;
+            vulnerableMessage = `Detect vulnerable packages in your repository!\n${vulnerableMessage}`;
             process.exitCode = 1;
         }
         core.setOutput('check-result', vulnerableMessage);

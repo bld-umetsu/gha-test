@@ -1,6 +1,3 @@
-const trimLineFeedCodeFromVersion = (versionString: string): string =>
-  versionString.replace('\n', '');
-
 const trimMetaDataFromVersion = (versionString: string): string => {
   const tempRemoveBuildMetaData = versionString.split('+');
   const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
@@ -9,19 +6,19 @@ const trimMetaDataFromVersion = (versionString: string): string => {
 
 // cf.: https://semver.org/lang/ja/#spec-item-11
 export const checkVulnerableVersion = (
-  targetVersion: string,
+  targetVersionWithNewline: string,
   minVersion: string,
   maxVersion: string,
 ): boolean => {
-  const pureVersion = trimLineFeedCodeFromVersion(targetVersion);
+  const targetVersion = targetVersionWithNewline.replace('\n', '');
   if (minVersion === maxVersion) {
-    if (pureVersion === minVersion) {
+    if (targetVersion === minVersion) {
       return true;
     }
     return false;
   }
 
-  const numericTargetVersion = trimMetaDataFromVersion(pureVersion);
+  const numericTargetVersion = trimMetaDataFromVersion(targetVersion);
 
   const compareResult = {
     VERSION_LARGE: 1,

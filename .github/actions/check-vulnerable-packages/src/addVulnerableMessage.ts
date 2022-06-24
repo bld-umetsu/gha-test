@@ -1,9 +1,9 @@
 export const addVulnerableMessage = (
   messageBuffer: string,
   packageName: string,
-  packageVersion: string,
+  packageVersionWithNewline: string,
   packageLockJsonfilePath: string,
 ): string => {
-  const removedReturnCodeFromVersion = packageVersion.replace('\n', '');
-  return `${messageBuffer}[${packageName} ${removedReturnCodeFromVersion}] was found in '${packageLockJsonfilePath}'\n`;
+  const packageVersion = packageVersionWithNewline.replace('\n', '');
+  return `${messageBuffer}[${packageName} ${packageVersion}] was found in '${packageLockJsonfilePath}'\n`;
 };
