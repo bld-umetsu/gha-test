@@ -44,9 +44,9 @@ var pkgdt: pkg[] = [
 // create test of vulnerablePackages.json
 var data:string = "[\n"
 for(var i = 0; i < pkgdt.length; i++) {
-    data = data + "\t{ \"pkgnm\": \"" + pkgdt[i].name + "\", ";
-    data = data + "\"pkgvermin\": \"" + pkgdt[i].min + "\", ";
-    data = data + "\"pkgvermax\": \"" + pkgdt[i].max + "\" }";
+    data = data + "\t{ \"package-name\": \"" + pkgdt[i].name + "\", ";
+    data = data + "\"package-version-min\": \"" + pkgdt[i].min + "\", ";
+    data = data + "\"package-version-max\": \"" + pkgdt[i].max + "\" }";
     if(i < pkgdt.length-1) {
         data = data + ",";
     }

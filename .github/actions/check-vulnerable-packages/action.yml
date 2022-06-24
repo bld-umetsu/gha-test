@@ -8,11 +8,9 @@ inputs:
   package-version-min:
     description: 'Minimum version of the vulnerable package'
     required: true
-    default: '1.0.0'
   package-version-max:
     description: 'Maximum version of the vulnerable package'
     required: true
-    default: '1.0.0'
 outputs:
   check-result:
     description: 'Check result'

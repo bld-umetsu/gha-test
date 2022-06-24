@@ -34,7 +34,7 @@ jobs:
       matrix:
         entries: ${{fromJson(needs.prepare-checking.outputs.package_matrix)}}
 
-    name: Checking ${{ matrix.entries.pkgnm }} ${{ matrix.entries.pkgvermin }}~${{ matrix.entries.pkgvermax }}
+    name: Checking ${{ matrix.entries.package-name }} ${{ matrix.entries.package-version-min }}~${{ matrix.entries.package-version-max }}
 
     steps:
       - name: Checkout
@@ -42,12 +42,11 @@ jobs:
 
       - name: Check the name and version of vulnerable packages
         id: check-vulnerability
-        # search 'packages' and `dependencies` section for a version of vulnerable package.
         uses: ./.github/actions/check-vulnerable-packages
         with:
-          package-name: ${{ matrix.entries.pkgnm }}
-          package-version-min: ${{ matrix.entries.pkgvermin }}
-          package-version-max: ${{ matrix.entries.pkgvermax }}
+          package-name: ${{ matrix.entries.package-name }}
+          package-version-min: ${{ matrix.entries.package-version-min }}
+          package-version-max: ${{ matrix.entries.package-version-max }}
 
       - name: Write fail comment to pull request
         id: write-fail-comment

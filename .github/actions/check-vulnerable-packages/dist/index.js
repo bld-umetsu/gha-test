@@ -3222,15 +3222,8 @@ exports.debug = debug; // for test
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addVulnerableMessage = void 0;
 const addVulnerableMessage = (messageBuffer, packageName, packageVersion, packageLockJsonfilePath) => {
-    messageBuffer +=
-        '[' +
-            packageName +
-            ' ' +
-            packageVersion.replace("\n", "") +
-            "] was found in '" +
-            packageLockJsonfilePath +
-            "'\n";
-    return messageBuffer;
+    const removedReturnCodeFromVersion = packageVersion.replace('\n', '');
+    return `${messageBuffer}[${packageName} ${removedReturnCodeFromVersion}] was found in '${packageLockJsonfilePath}'\n`;
 };
 exports.addVulnerableMessage = addVulnerableMessage;
 
@@ -3244,79 +3237,41 @@ exports.addVulnerableMessage = addVulnerableMessage;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.checkVulnerableVersion = void 0;
+const trimLineFeedCodeFromVersion = (versionString) => versionString.replace('\n', '');
+const trimMetaDataFromVersion = (versionString) => {
+    const tempRemoveBuildMetaData = versionString.split('+');
+    const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
+    return tempRemovePrereleaseVersion[0];
+};
 // cf.: https://semver.org/lang/ja/#spec-item-11
 const checkVulnerableVersion = (targetVersion, minVersion, maxVersion) => {
-    targetVersion = targetVersion.replace("\n", "");
+    const pureVersion = trimLineFeedCodeFromVersion(targetVersion);
     if (minVersion === maxVersion) {
-        if (targetVersion === minVersion) {
+        if (pureVersion === minVersion) {
             return true;
         }
-        else {
-            return false;
-        }
-    }
-    // separate each version string to Major, Miner and Patch.
-    const tempRemoveBuildMetaData = targetVersion.split('+');
-    const tempRemovePrereleaseVersion = tempRemoveBuildMetaData[0].split('-');
-    // const numericTargetVersion = tempRemoveBuildMetaData[0].split('-');
-    const numericTargetVersion = tempRemovePrereleaseVersion[0];
-    // const arrayTargetVersion = tempRemovePrereleaseVersion[0].split('.');
-    // const arrayMinVersion = minVersion.split('.');
-    // const arrayMaxVersion = maxVersion.split('.');
-    const VERSION_LARGE = 1;
-    const VERSION_SAME = 0;
-    const VERSION_SMALL = -1;
-    // compare with minimum version
-    const compareMinimumVersion = numericTargetVersion.localeCompare(minVersion);
-    if (compareMinimumVersion == VERSION_SMALL) {
         return false;
     }
-    else if (compareMinimumVersion == VERSION_SAME) {
+    const numericTargetVersion = trimMetaDataFromVersion(pureVersion);
+    const compareResult = {
+        VERSION_LARGE: 1,
+        VERSION_SAME: 0,
+        VERSION_SMALL: -1,
+    };
+    // compare with minimum version
+    const compareMinimumVersion = numericTargetVersion.localeCompare(minVersion);
+    if (compareMinimumVersion === compareResult.VERSION_SMALL) {
+        return false;
+    }
+    if (compareMinimumVersion === compareResult.VERSION_SAME) {
         return true;
     }
     // compare with maximum version
     const compareMaximumVersion = numericTargetVersion.localeCompare(maxVersion);
-    if (compareMaximumVersion == VERSION_LARGE) {
+    if (compareMaximumVersion === compareResult.VERSION_LARGE) {
         return false;
     }
-    else {
-        return true;
-    }
-    // // compare with minimum version
-    // let largerCount = 0;
-    // arrayTargetVersion.forEach((eachVersion, index) => {
-    //   if (index < arrayMinVersion.length) {
-    //     if (eachVersion > arrayMinVersion[index]) {
-    //       largerCount += 1;
-    //     }
-    //     if (eachVersion < arrayMinVersion[index]) {
-    //       return false;
-    //     }
-    //   }
-    // });
-    // if (largerCount == 0) {
-    //   if (arrayTargetVersion.length == arrayMinVersion.length) {
-    //     return true;
-    //   } else if (arrayTargetVersion.length < arrayMinVersion.length) {
-    //     return false;
-    //   }
-    // }
-    // // compare with maximum version
-    // arrayTargetVersion.forEach((eachVersion, index) => {
-    //   if (index < arrayMaxVersion.length) {
-    //     if (eachVersion < arrayMaxVersion[index]) {
-    //       return true;
-    //     }
-    //     if (eachVersion > arrayMaxVersion[index]) {
-    //       return false;
-    //     }
-    //   }
-    // });
-    // if (arrayTargetVersion.length <= arrayMaxVersion.length) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    return true;
 };
 exports.checkVulnerableVersion = checkVulnerableVersion;
 
@@ -3366,7 +3321,6 @@ const executeCommand = async (command) => {
         },
     };
     await exec.exec(command, [''], options);
-    // resolve(output);
     return output;
 };
 exports.executeCommand = executeCommand;
@@ -3412,37 +3366,27 @@ const main = async () => {
         const packageName = core.getInput('package-name');
         const packageVersionMin = core.getInput('package-version-min');
         const packageVersionMax = core.getInput('package-version-max');
-        // const packageName = "ng-09";
-        // const packageVersionMin = "3.3.0-alpha.3";
-        // const packageVersionMax = "3.3.0-alpha.3";
         const listFoundPackageLockJson = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json""`);
-        const arrayPackageLockJson = listFoundPackageLockJson.split('\n');
-        // const listFoundPackageLockJson = await executeCommand(
-        //   `/bin/bash -c "find ./ -mindepth 1 -name "package-lock.json" | jq -R -s -c 'split(\\"\n\\")[:-1]'"`,
-        // );
-        // const arrayPackageLockJson = listFoundPackageLockJson.split(',');
+        const arrayPackageLockJson = listFoundPackageLockJson
+            .split('\n')
+            .filter(Boolean);
         let vulnerableMessage = '';
-        for (let filePath of arrayPackageLockJson) {
-            if (filePath == "")
-                continue;
+        await Promise.all(arrayPackageLockJson.map(async (filePath) => {
             const fitVersionFromPackagesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${filePath} | jq -r '.packages.\\"node_modules/${packageName}\\".version'"`);
-            const isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromPackagesSection, packageVersionMin, packageVersionMax);
+            let isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromPackagesSection, packageVersionMin, packageVersionMax);
             if (isVulnerableVersion) {
                 vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersionFromPackagesSection, filePath);
             }
             else {
                 const fitVersionFromDependenciesSection = await (0, executeCommand_1.executeCommand)(`/bin/bash -c "cat ${filePath} | jq -r '.dependencies.\\"${packageName}\\".version'"`);
-                const isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromDependenciesSection, packageVersionMin, packageVersionMax);
+                isVulnerableVersion = (0, checkVulnerableVersion_1.checkVulnerableVersion)(fitVersionFromDependenciesSection, packageVersionMin, packageVersionMax);
                 if (isVulnerableVersion) {
                     vulnerableMessage = (0, addVulnerableMessage_1.addVulnerableMessage)(vulnerableMessage, packageName, fitVersionFromDependenciesSection, filePath);
                 }
             }
-        }
-        ;
-        if (vulnerableMessage != '') {
-            vulnerableMessage =
-                'vulnerable package has included in your repository.\n' +
-                    vulnerableMessage;
+        }));
+        if (vulnerableMessage !== '') {
+            vulnerableMessage = `vulnerable package has included in your repository.\n${vulnerableMessage}`;
             process.exitCode = 1;
         }
         core.setOutput('check-result', vulnerableMessage);
@@ -3453,7 +3397,11 @@ const main = async () => {
         }
     }
 };
-main();
+main().catch((error) => {
+    if (error instanceof Error) {
+        core.setFailed(error.message);
+    }
+});
 
 
 /***/ }),
