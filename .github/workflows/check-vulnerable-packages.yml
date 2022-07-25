@@ -1,0 +1,58 @@
+name: Check Vulnerable Packages
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths: ['**/package-lock.json', '.github/workflows/vulnerablePackages.json']
+  workflow_dispatch:
+
+jobs:
+  prepare-checking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      package_matrix: ${{ steps.read-vulnerability-list.outputs.value }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Read vulnerability list from JSON
+        id: read-vulnerability-list
+        # Read JSON file as list of packages to be checked which includes package name and version.
+        run: |
+          package_list=$(cat "./.github/workflows/vulnerablePackages.json" | jq -c)
+          echo $package_list
+          echo "::set-output name=value::$( echo $package_list )"
+
+  execute:
+    needs: prepare-checking
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # the Json read by previous job is changed to checking jobs. each job has same steps.
+    strategy:
+      fail-fast: false
+      matrix:
+        entries: ${{fromJson(needs.prepare-checking.outputs.package_matrix)}}
+
+    name: Checking ${{ matrix.entries.package-name }} ${{ matrix.entries.package-version-min }}~${{ matrix.entries.package-version-max }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check the name and version of vulnerable packages
+        id: check-vulnerability
+        uses: ./.github/actions/check-vulnerable-packages
+        with:
+          package-name: ${{ matrix.entries.package-name }}
+          package-version-min: ${{ matrix.entries.package-version-min }}
+          package-version-max: ${{ matrix.entries.package-version-max }}
+
+      - name: Write fail comment to pull request
+        id: write-fail-comment
+        # write comment to pull request if previous step failed.
+        if: failure()
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ':x: ${{ steps.check-vulnerability.outputs.check-result }}'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
