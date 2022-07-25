@@ -10,4 +10,4 @@ jobs:
   world:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Test second xxx"
+      - run: echo "Test second zzz"
