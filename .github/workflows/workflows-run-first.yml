@@ -1,0 +1,9 @@
+name: Test workflow_run first
+on: push
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Test first"
+      
