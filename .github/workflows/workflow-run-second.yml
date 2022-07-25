@@ -2,7 +2,7 @@ name: Test workflow_run second
 on:
   workflow_run:
     workflows:
-      - workflow-run-first
+      - Test workflow_run first
     types:
       - completed
 
